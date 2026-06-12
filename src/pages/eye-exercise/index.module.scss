@@ -1,0 +1,234 @@
+@use '@/styles/variables.scss' as *;
+
+.page {
+  min-height: 100vh;
+  background: linear-gradient(180deg, $color-bg-gradient-start 0%, $color-bg-gradient-end 100%);
+  padding: $spacing-lg $page-padding 60rpx;
+  display: flex;
+  flex-direction: column;
+}
+
+.progressBar {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-xl;
+}
+
+.stepDots {
+  display: flex;
+  gap: $spacing-xs;
+  flex: 1;
+}
+
+.stepDot {
+  flex: 1;
+  height: 8rpx;
+  border-radius: $radius-round;
+  background: $color-divider;
+  transition: background $transition-base;
+}
+
+.activeDot {
+  background: $color-primary;
+}
+
+.completedDot {
+  background: $color-primary;
+}
+
+.stepCount {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  min-width: 80rpx;
+  text-align: right;
+}
+
+.exerciseCard {
+  flex: 1;
+  background: $color-bg-card;
+  border-radius: $radius-xl;
+  padding: $spacing-xl;
+  box-shadow: $shadow-card;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: $spacing-lg;
+}
+
+.exerciseIcon {
+  width: 280rpx;
+  height: 280rpx;
+  border-radius: $radius-round;
+  background: linear-gradient(135deg, $color-primary-bg 0%, #ecfdf5 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 120rpx;
+  margin-bottom: $spacing-lg;
+}
+
+.exerciseName {
+  font-size: $font-size-xxl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-md;
+  text-align: center;
+}
+
+.exerciseDesc {
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+  text-align: center;
+  line-height: $line-height-normal;
+  margin-bottom: $spacing-lg;
+}
+
+.timerCircle {
+  position: relative;
+  width: 160rpx;
+  height: 160rpx;
+  margin-top: auto;
+}
+
+.timerSvg {
+  transform: rotate(-90deg);
+}
+
+.timerBg {
+  fill: none;
+  stroke: $color-divider;
+}
+
+.timerProgress {
+  fill: none;
+  stroke: $color-primary;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1s linear;
+}
+
+.timerText {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
+}
+
+.tipBox {
+  background: $color-secondary-bg;
+  border-radius: $radius-lg;
+  padding: $spacing-md $spacing-lg;
+  margin-bottom: $spacing-lg;
+}
+
+.tipTitle {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-secondary;
+  margin-bottom: $spacing-xs;
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+}
+
+.tipContent {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  line-height: $line-height-normal;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-lg;
+}
+
+.controlBtn {
+  @include button-reset;
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: $radius-round;
+  background: $color-bg-card;
+  color: $color-text-secondary;
+  font-size: $font-size-lg;
+  box-shadow: $shadow-card;
+  transition: all $transition-base;
+
+  &:active {
+    transform: scale(0.92);
+  }
+
+  &:disabled {
+    opacity: 0.4;
+  }
+}
+
+.primaryBtn {
+  width: 140rpx;
+  height: 140rpx;
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  color: $color-text-white;
+  font-size: $font-size-xl;
+  box-shadow: 0 6rpx 24rpx rgba(34, 197, 94, 0.3);
+}
+
+.completeCard {
+  flex: 1;
+  background: $color-bg-card;
+  border-radius: $radius-xl;
+  padding: $spacing-xl;
+  box-shadow: $shadow-card;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.completeIcon {
+  font-size: 120rpx;
+  margin-bottom: $spacing-lg;
+}
+
+.completeTitle {
+  font-size: $font-size-xxl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-sm;
+}
+
+.completeDesc {
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+  margin-bottom: $spacing-xl;
+}
+
+.completeBtn {
+  @include button-reset;
+  width: 80%;
+  height: $button-height-lg;
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  color: $color-text-white;
+  border-radius: $radius-button;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  box-shadow: 0 6rpx 24rpx rgba(34, 197, 94, 0.3);
+  transition: all $transition-base;
+
+  &:active {
+    transform: scale(0.98);
+    opacity: 0.9;
+  }
+}
+
+.againBtn {
+  background: $color-bg-card;
+  color: $color-primary;
+  border: 2rpx solid $color-primary;
+  box-shadow: none;
+  margin-top: $spacing-md;
+}

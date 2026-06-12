@@ -1,0 +1,50 @@
+@use '@/styles/variables.scss' as *;
+
+.badgeItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: $spacing-md;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-card;
+  transition: transform $transition-base;
+
+  &:active {
+    transform: scale(0.96);
+  }
+}
+
+.locked {
+  opacity: 0.4;
+  filter: grayscale(100%);
+}
+
+.icon {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: $radius-round;
+  background: $color-primary-bg;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48rpx;
+  margin-bottom: $spacing-sm;
+}
+
+.name {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+  margin-bottom: 4rpx;
+  @include text-ellipsis;
+  max-width: 120rpx;
+}
+
+.desc {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  text-align: center;
+  @include text-ellipsis;
+  max-width: 120rpx;
+}

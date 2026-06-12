@@ -1,0 +1,236 @@
+@use '@/styles/variables.scss' as *;
+
+.page {
+  min-height: 100vh;
+  background: linear-gradient(180deg, $color-bg-gradient-start 0%, $color-bg-gradient-end 100%);
+  padding: $spacing-xl $page-padding;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.modeTabs {
+  display: flex;
+  background: $color-bg-card;
+  border-radius: $radius-round;
+  padding: 6rpx;
+  margin-bottom: $spacing-xl;
+  box-shadow: $shadow-card;
+}
+
+.modeTab {
+  padding: $spacing-sm $spacing-xl;
+  border-radius: $radius-round;
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+  transition: all $transition-base;
+}
+
+.activeTab {
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  color: $color-text-white;
+  font-weight: $font-weight-semibold;
+}
+
+.restTab {
+  &.activeTab {
+    background: linear-gradient(135deg, $color-secondary 0%, $color-secondary-light 100%);
+  }
+}
+
+.timerContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: $spacing-xl 0 $spacing-xl * 2;
+}
+
+.timerRing {
+  position: relative;
+  width: 480rpx;
+  height: 480rpx;
+  margin-bottom: $spacing-lg;
+}
+
+.timerSvg {
+  transform: rotate(-90deg);
+}
+
+.circleBg {
+  fill: none;
+  stroke: $color-divider;
+}
+
+.circleProgress {
+  fill: none;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1s linear;
+}
+
+.focusProgress {
+  stroke: url(#focusGradient);
+}
+
+.restProgress {
+  stroke: url(#restGradient);
+}
+
+.timerContent {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.timerText {
+  font-size: 88rpx;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  font-variant-numeric: tabular-nums;
+}
+
+.timerLabel {
+  font-size: $font-size-md;
+  color: $color-text-tertiary;
+  margin-top: $spacing-sm;
+}
+
+.timerTip {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  margin-top: $spacing-md;
+  text-align: center;
+  line-height: $line-height-normal;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-xl;
+  margin-bottom: $spacing-xl * 2;
+}
+
+.controlBtn {
+  @include button-reset;
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: $radius-round;
+  background: $color-bg-card;
+  color: $color-text-secondary;
+  font-size: $font-size-lg;
+  box-shadow: $shadow-card;
+  transition: all $transition-base;
+
+  &:active {
+    transform: scale(0.92);
+  }
+}
+
+.primaryBtn {
+  width: 180rpx;
+  height: 180rpx;
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  color: $color-text-white;
+  font-size: 36rpx;
+  font-weight: $font-weight-semibold;
+  box-shadow: 0 8rpx 32rpx rgba(34, 197, 94, 0.3);
+}
+
+.pauseBtn {
+  background: linear-gradient(135deg, $color-warning 0%, #fbbf24 100%);
+  box-shadow: 0 8rpx 32rpx rgba(245, 158, 11, 0.3);
+}
+
+.restPrimary {
+  background: linear-gradient(135deg, $color-secondary 0%, $color-secondary-light 100%);
+  box-shadow: 0 8rpx 32rpx rgba(6, 182, 212, 0.3);
+}
+
+.quickSettings {
+  width: 100%;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+}
+
+.quickTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-md;
+}
+
+.durationOptions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-md;
+}
+
+.durationOption {
+  padding: $spacing-sm $spacing-md;
+  border-radius: $radius-round;
+  background: $color-bg-page;
+  color: $color-text-secondary;
+  font-size: $font-size-sm;
+  transition: all $transition-base;
+
+  &:active {
+    transform: scale(0.96);
+  }
+}
+
+.activeOption {
+  background: $color-primary-bg;
+  color: $color-primary;
+  font-weight: $font-weight-medium;
+}
+
+.settingRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-sm 0;
+  border-top: 1rpx solid $color-divider;
+}
+
+.settingLabel {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.settingIcon {
+  font-size: $font-size-md;
+}
+
+.tipCard {
+  width: 100%;
+  background: linear-gradient(135deg, $color-primary-bg 0%, #ecfdf5 100%);
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  margin-top: $spacing-md;
+}
+
+.tipTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-primary-dark;
+  margin-bottom: $spacing-sm;
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.tipContent {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  line-height: $line-height-normal;
+}

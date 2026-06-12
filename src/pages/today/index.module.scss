@@ -1,0 +1,228 @@
+@use '@/styles/variables.scss' as *;
+
+.page {
+  min-height: 100vh;
+  background: linear-gradient(180deg, $color-bg-gradient-start 0%, $color-bg-gradient-end 100%);
+  padding-bottom: 60rpx;
+}
+
+.header {
+  padding: $spacing-xl $page-padding $spacing-xl * 3;
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  color: $color-text-white;
+  border-bottom-left-radius: 40rpx;
+  border-bottom-right-radius: 40rpx;
+}
+
+.greeting {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-medium;
+  margin-bottom: $spacing-xs;
+  opacity: 0.95;
+}
+
+.subGreeting {
+  font-size: $font-size-sm;
+  opacity: 0.85;
+  margin-bottom: $spacing-lg;
+}
+
+.streakBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-sm;
+  background: rgba(255, 255, 255, 0.2);
+  padding: $spacing-sm $spacing-md;
+  border-radius: $radius-round;
+  backdrop-filter: blur(10rpx);
+}
+
+.streakIcon {
+  font-size: $font-size-lg;
+}
+
+.streakText {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+}
+
+.content {
+  margin-top: -120rpx;
+  padding: 0 $page-padding;
+}
+
+.scoreCard {
+  background: $color-bg-card;
+  border-radius: $radius-xl;
+  padding: $spacing-xl;
+  box-shadow: $shadow-card;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: $spacing-md;
+}
+
+.scoreTitle {
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+  margin-bottom: $spacing-md;
+}
+
+.scoreRing {
+  margin: $spacing-md 0;
+}
+
+.scoreValue {
+  font-size: 56rpx;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
+}
+
+.scoreLabel {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  margin-top: $spacing-sm;
+}
+
+.quickActions {
+  display: flex;
+  gap: $spacing-md;
+  margin-bottom: $spacing-md;
+}
+
+.actionBtn {
+  @include button-reset;
+  flex: 1;
+  height: 140rpx;
+  border-radius: $radius-lg;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-sm;
+  color: $color-text-white;
+  font-weight: $font-weight-medium;
+  font-size: $font-size-md;
+  transition: all $transition-base;
+
+  &:active {
+    transform: scale(0.96);
+    opacity: 0.9;
+  }
+}
+
+.focusBtn {
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+}
+
+.eyeBtn {
+  background: linear-gradient(135deg, $color-secondary 0%, $color-secondary-light 100%);
+}
+
+.actionIcon {
+  font-size: 48rpx;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: $spacing-md;
+  margin-bottom: $spacing-md;
+}
+
+.chartCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-md;
+}
+
+.chartHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-lg;
+}
+
+.chartTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.chartSubtitle {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.chartBars {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  height: 200rpx;
+  padding: 0 $spacing-xs;
+}
+
+.barItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.bar {
+  width: 36rpx;
+  min-height: 12rpx;
+  background: linear-gradient(180deg, $color-primary 0%, $color-primary-light 100%);
+  border-radius: $radius-xs;
+  transition: height $transition-slow ease;
+  margin-bottom: $spacing-sm;
+}
+
+.todayBar {
+  background: linear-gradient(180deg, $color-secondary 0%, $color-secondary-light 100%);
+}
+
+.barLabel {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.tipsScroll {
+  margin: 0 -$page-padding;
+  padding: 0 $page-padding;
+  white-space: nowrap;
+}
+
+.tipCard {
+  @include scroll-x-item(280rpx);
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-md;
+  box-shadow: $shadow-card;
+  margin-right: $spacing-md;
+  white-space: normal;
+}
+
+.tipIcon {
+  font-size: 40rpx;
+  margin-bottom: $spacing-sm;
+}
+
+.tipTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-xs;
+}
+
+.tipContent {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  line-height: $line-height-normal;
+}
+
+.section {
+  margin-bottom: $spacing-lg;
+}

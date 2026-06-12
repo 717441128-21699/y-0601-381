@@ -1,0 +1,288 @@
+@use '@/styles/variables.scss' as *;
+
+.page {
+  min-height: 100vh;
+  background: linear-gradient(180deg, $color-bg-gradient-start 0%, $color-bg-gradient-end 100%);
+  padding: $spacing-md $page-padding 60rpx;
+}
+
+.dateSelector {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-lg;
+  padding: $spacing-md 0;
+  margin-bottom: $spacing-md;
+}
+
+.dateNav {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: $radius-round;
+  background: $color-bg-card;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: $font-size-lg;
+  color: $color-text-secondary;
+  box-shadow: $shadow-card;
+}
+
+.dateText {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.dateSub {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  text-align: center;
+  margin-top: 4rpx;
+}
+
+.summaryCard {
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  color: $color-text-white;
+  margin-bottom: $spacing-md;
+  box-shadow: 0 4rpx 20rpx rgba(34, 197, 94, 0.2);
+}
+
+.summaryTitle {
+  font-size: $font-size-md;
+  margin-bottom: $spacing-md;
+  opacity: 0.9;
+}
+
+.summaryStats {
+  display: flex;
+  justify-content: space-around;
+}
+
+.summaryItem {
+  text-align: center;
+}
+
+.summaryValue {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+}
+
+.summaryLabel {
+  font-size: $font-size-sm;
+  opacity: 0.85;
+  margin-top: 4rpx;
+}
+
+.recordCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-md;
+  box-shadow: $shadow-card;
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-md;
+}
+
+.cardTitle {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.cardIcon {
+  font-size: $font-size-lg;
+}
+
+.cardValue {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-primary;
+}
+
+.sliderRow {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  margin-top: $spacing-md;
+}
+
+.slider {
+  flex: 1;
+}
+
+.sliderValue {
+  min-width: 80rpx;
+  text-align: right;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.drynessSelector {
+  display: flex;
+  justify-content: space-between;
+  margin-top: $spacing-md;
+}
+
+.drynessItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-xs;
+  padding: $spacing-sm;
+  border-radius: $radius-md;
+  transition: all $transition-base;
+}
+
+.activeDryness {
+  background: $color-primary-bg;
+  transform: scale(1.1);
+}
+
+.drynessIcon {
+  font-size: 48rpx;
+}
+
+.drynessLabel {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+}
+
+.activeDryness .drynessLabel {
+  color: $color-primary;
+  font-weight: $font-weight-medium;
+}
+
+.visionRow {
+  display: flex;
+  gap: $spacing-md;
+  margin-top: $spacing-md;
+}
+
+.visionItem {
+  flex: 1;
+  text-align: center;
+  padding: $spacing-md;
+  background: $color-bg-page;
+  border-radius: $radius-md;
+}
+
+.visionEye {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  margin-bottom: $spacing-xs;
+}
+
+.visionValue {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
+}
+
+.quickActions {
+  display: flex;
+  gap: $spacing-sm;
+  margin-top: $spacing-sm;
+  flex-wrap: wrap;
+}
+
+.quickBtn {
+  padding: $spacing-xs $spacing-sm;
+  background: $color-bg-page;
+  border-radius: $radius-sm;
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+
+  &:active {
+    background: $color-primary-bg;
+    color: $color-primary;
+  }
+}
+
+.chartSection {
+  margin-top: $spacing-lg;
+}
+
+.chartCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+}
+
+.chartTabs {
+  display: flex;
+  gap: $spacing-lg;
+  margin-bottom: $spacing-lg;
+}
+
+.chartTab {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  padding: $spacing-xs 0;
+  border-bottom: 4rpx solid transparent;
+  transition: all $transition-base;
+}
+
+.activeTab {
+  color: $color-primary;
+  font-weight: $font-weight-semibold;
+  border-bottom-color: $color-primary;
+}
+
+.trendChart {
+  height: 300rpx;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: $spacing-sm 0;
+}
+
+.trendItem {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-xs;
+}
+
+.trendBar {
+  width: 36rpx;
+  min-height: 8rpx;
+  background: linear-gradient(180deg, $color-primary 0%, $color-primary-light 100%);
+  border-radius: $radius-xs;
+  transition: height $transition-slow ease;
+}
+
+.trendLabel {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.eyeExerciseBtn {
+  @include button-reset;
+  width: 100%;
+  height: $button-height-md;
+  background: linear-gradient(135deg, $color-secondary 0%, $color-secondary-light 100%);
+  color: $color-text-white;
+  border-radius: $radius-button;
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  margin-top: $spacing-md;
+
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.98);
+  }
+}

@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo } from 'react'
 import { View, Text, ScrollView, Button } from '@tarojs/components'
-import Taro, { useShareAppMessage, useRouter } from '@tarojs/taro'
+import Taro, { useShareAppMessage, getCurrentInstance } from '@tarojs/taro'
 import { useEyeStore } from '@/store/useEyeStore'
 import { formatDuration } from '@/utils/date'
 import dayjs from 'dayjs'
@@ -20,7 +20,6 @@ interface SharedReportData {
 }
 
 const WeeklyReportPage: React.FC = () => {
-  const router = useRouter()
   const { init, generateWeeklyReport, streakDays: storeStreak, bestStreak: storeBestStreak } = useEyeStore()
 
   useEffect(() => {
@@ -32,16 +31,17 @@ const WeeklyReportPage: React.FC = () => {
   }, [])
 
   const sharedData = useMemo<SharedReportData | null>(() => {
-    const dataParam = router.params?.data
-    if (!dataParam) return null
     try {
+      const instance = getCurrentInstance()
+      const dataParam = instance?.router?.params?.data
+      if (!dataParam) return null
       const decoded = decodeURIComponent(dataParam)
       const parsed = JSON.parse(decoded)
       return { ...parsed, isShared: true }
     } catch (e) {
       return null
     }
-  }, [router.params])
+  }, [])
 
   const report = useMemo<SharedReportData>(() => {
     if (sharedData) return sharedData

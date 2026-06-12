@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo } from 'react'
 import { View, Text, ScrollView } from '@tarojs/components'
 import Taro from '@tarojs/taro'
+import classNames from 'classnames'
 import { useEyeStore } from '@/store/useEyeStore'
 import { formatDuration } from '@/utils/date'
 import { HEALTH_TIPS } from '@/data/mockData'
@@ -37,6 +38,13 @@ const TodayPage: React.FC = () => {
     const sleepDone = sleepHours >= settings.targetSleepHours
     const outdoorDone = outdoorMinutes >= settings.targetOutdoorMinutes
 
+    const screenRemaining = settings.targetScreenTime - screenTime
+    const screenTip = screenDone
+      ? '已达标 ✓'
+      : screenRemaining > 60
+        ? `还可用 ${Math.round(screenRemaining / 60 * 10) / 10} 小时`
+        : `还可用 ${Math.round(screenRemaining)} 分钟`
+
     return [
       {
         key: 'screen',
@@ -47,7 +55,7 @@ const TodayPage: React.FC = () => {
         unit: '小时',
         progress: Math.min(screenTime / settings.targetScreenTime, 1),
         done: screenDone,
-        tip: screenDone ? '已达标 ✓' : `还剩 ${(settings.targetScreenTime - screenTime) / 60 > 1 ? Math.round((settings.targetScreenTime - screenTime) / 60 * 10) / 10 : Math.round(settings.targetScreenTime - screenTime)} ${(settings.targetScreenTime - screenTime) / 60 >= 1 ? '小时' : '分钟'}`
+        tip: screenTip
       },
       {
         key: 'eye',

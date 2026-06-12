@@ -65,20 +65,20 @@ const AchievementPage: React.FC = () => {
 
   const unlockedCount = badges.filter(b => b.unlocked).length
 
-  const isDayGoalMet = (record: { screenTime: number; eyeExerciseCount: number; sleepHours: number; outdoorMinutes: number } | undefined) => {
-    if (!record) return false
-    return record.screenTime < settings.targetScreenTime
-      && record.eyeExerciseCount >= settings.targetEyeExercises
-      && record.sleepHours >= settings.targetSleepHours
-      && record.outdoorMinutes >= settings.targetOutdoorMinutes
-  }
-
   const calendarDays = useMemo(() => {
     const year = currentMonth.year()
     const month = currentMonth.month()
     const firstDay = dayjs(`${year}-${month + 1}-01`)
     const daysInMonth = firstDay.daysInMonth()
     const startDayOfWeek = firstDay.day()
+
+    const isGoalMet = (record: { screenTime: number; eyeExerciseCount: number; sleepHours: number; outdoorMinutes: number } | undefined) => {
+      if (!record) return false
+      return record.screenTime < settings.targetScreenTime
+        && record.eyeExerciseCount >= settings.targetEyeExercises
+        && record.sleepHours >= settings.targetSleepHours
+        && record.outdoorMinutes >= settings.targetOutdoorMinutes
+    }
 
     const days: { date: string; day: number; isCurrentMonth: boolean; isToday: boolean; isGoalMet: boolean; hasRecord: boolean }[] = []
 
@@ -93,12 +93,12 @@ const AchievementPage: React.FC = () => {
         day,
         isCurrentMonth: false,
         isToday: false,
-        isGoalMet: isDayGoalMet(record),
+        isGoalMet: isGoalMet(record),
         hasRecord: !!record
       })
     }
 
-    const today = dayjs().format('YYYY-MM-DD')
+    const todayStr = dayjs().format('YYYY-MM-DD')
     for (let i = 1; i <= daysInMonth; i++) {
       const dateStr = firstDay.date(i).format('YYYY-MM-DD')
       const record = records.find(r => r.date === dateStr)
@@ -106,8 +106,8 @@ const AchievementPage: React.FC = () => {
         date: dateStr,
         day: i,
         isCurrentMonth: true,
-        isToday: dateStr === today,
-        isGoalMet: isDayGoalMet(record),
+        isToday: dateStr === todayStr,
+        isGoalMet: isGoalMet(record),
         hasRecord: !!record
       })
     }
@@ -122,13 +122,13 @@ const AchievementPage: React.FC = () => {
         day: i,
         isCurrentMonth: false,
         isToday: false,
-        isGoalMet: isDayGoalMet(record),
+        isGoalMet: isGoalMet(record),
         hasRecord: !!record
       })
     }
 
     return days
-  }, [currentMonth, records, settings, isDayGoalMet])
+  }, [currentMonth, records, settings])
 
   const selectedRecord = useMemo(() => {
     if (!selectedDate) return null

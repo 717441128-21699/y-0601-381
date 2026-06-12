@@ -80,8 +80,12 @@ export const useEyeStore = create<EyeHealthState>((set, get) => ({
     const records = savedRecords && savedRecords.length > 0 ? savedRecords : mockRecords
     const todayRecord = getTodayRecordFromList(records)
 
+    const mergedSettings = savedSettings
+      ? { ...DEFAULT_SETTINGS, ...savedSettings }
+      : { ...DEFAULT_SETTINGS }
+
     set({
-      settings: savedSettings || DEFAULT_SETTINGS,
+      settings: mergedSettings,
       records,
       badges: savedBadges || BADGE_LIST,
       todayScreenTime: todayRecord?.screenTime || 0,

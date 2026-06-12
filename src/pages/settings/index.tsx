@@ -95,19 +95,7 @@ const SettingsPage: React.FC = () => {
   }
 
   const handleFamilyReport = () => {
-    Taro.showModal({
-      title: '家庭周报',
-      content: '生成本周护眼健康周报，可分享给家人查看。',
-      confirmText: '生成周报',
-      success: (res) => {
-        if (res.confirm) {
-          Taro.showToast({ title: '周报生成中...', icon: 'loading' })
-          setTimeout(() => {
-            Taro.showToast({ title: '周报已生成', icon: 'success' })
-          }, 1500)
-        }
-      }
-    })
+    Taro.navigateTo({ url: '/pages/weekly-report/index' })
   }
 
   const handleClearData = () => {

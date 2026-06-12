@@ -8,7 +8,7 @@ import styles from './index.module.scss'
 type TimelineType = 'week' | 'month' | 'year'
 
 const AchievementPage: React.FC = () => {
-  const { init, records, streakDays, badges } = useEyeStore()
+  const { init, records, streakDays, bestStreak, badges } = useEyeStore()
   const [timeline, setTimeline] = useState<TimelineType>('week')
 
   useEffect(() => {
@@ -59,8 +59,6 @@ const AchievementPage: React.FC = () => {
 
   const unlockedCount = badges.filter(b => b.unlocked).length
 
-  const displayBadges = badges.slice(0, 9)
-
   return (
     <ScrollView className={styles.page} scrollY>
       <View className={styles.streakCard}>
@@ -69,7 +67,7 @@ const AchievementPage: React.FC = () => {
         <Text className={styles.streakLabel}>连续护眼天数</Text>
         <View className={styles.streakInfo}>
           <View className={styles.streakInfoItem}>
-            <Text className={styles.streakInfoValue}>{Math.max(streakDays - 2, 15)}</Text>
+            <Text className={styles.streakInfoValue}>{bestStreak}</Text>
             <Text>历史最佳</Text>
           </View>
           <View className={styles.streakInfoItem}>
@@ -137,7 +135,7 @@ const AchievementPage: React.FC = () => {
           </Text>
         </View>
         <View className={styles.badgesGrid}>
-          {displayBadges.map(badge => (
+          {badges.map(badge => (
             <View
               key={badge.id}
               className={classNames(styles.badgeCard, !badge.unlocked && styles.badgeLocked)}

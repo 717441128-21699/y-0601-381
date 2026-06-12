@@ -13,6 +13,7 @@ interface EyeHealthState {
   currentSession: TimerSession | null
   todayScreenTime: number
   streakDays: number
+  bestStreak: number
   environmentRecords: EnvironmentRecord[]
 
   init: () => void
@@ -28,6 +29,11 @@ interface EyeHealthState {
   checkBadges: () => void
   getTodayRecord: () => DailyRecord | undefined
   getWeekRecords: () => DailyRecord[]
+  saveEnvironmentRecord: (record: Omit<EnvironmentRecord, 'date'>) => void
+  getTodayEnvironment: () => EnvironmentRecord | undefined
+  getRecentEnvironments: (count: number) => EnvironmentRecord[]
+  calculateStreak: () => void
+  generateWeeklyReport: () => WeeklyReport
 }
 
 const DEFAULT_SETTINGS: Settings = {
@@ -56,6 +62,7 @@ export const useEyeStore = create<EyeHealthState>((set, get) => ({
   currentSession: null,
   todayScreenTime: 0,
   streakDays: 0,
+  bestStreak: 0,
   environmentRecords: [],
 
   init: () => {
@@ -63,6 +70,8 @@ export const useEyeStore = create<EyeHealthState>((set, get) => ({
     const savedRecords = storage.get<DailyRecord[]>('records')
     const savedBadges = storage.get<Badge[]>('badges')
     const savedStreak = storage.get<number>('streakDays')
+    const savedBestStreak = storage.get<number>('bestStreak')
+    const savedEnvRecords = storage.get<EnvironmentRecord[]>('environmentRecords')
 
     const records = savedRecords && savedRecords.length > 0 ? savedRecords : mockRecords
     const todayRecord = getTodayRecordFromList(records)
@@ -72,8 +81,12 @@ export const useEyeStore = create<EyeHealthState>((set, get) => ({
       records,
       badges: savedBadges || BADGE_LIST,
       todayScreenTime: todayRecord?.screenTime || 0,
-      streakDays: savedStreak || 7
+      streakDays: savedStreak || 0,
+      bestStreak: savedBestStreak || 0,
+      environmentRecords: savedEnvRecords || []
     })
+
+    get().calculateStreak()
   },
 
   updateSettings: (settings) => {
@@ -106,6 +119,7 @@ export const useEyeStore = create<EyeHealthState>((set, get) => ({
       records: [...records],
       todayScreenTime: todayRecord.screenTime
     })
+    get().calculateStreak()
   },
 
   addEyeExercise: () => {
@@ -251,34 +265,54 @@ export const useEyeStore = create<EyeHealthState>((set, get) => ({
   },
 
   checkBadges: () => {
-    const { records, badges } = get()
-    const newBadges = [...badges]
+    const { records, badges, streakDays, bestStreak } = get()
+    const newBadges = badges.map(b => ({ ...b }))
     let changed = false
 
     const totalEyeExercises = records.reduce((sum, r) => sum + r.eyeExerciseCount, 0)
     const totalOutdoor = records.reduce((sum, r) => sum + r.outdoorMinutes, 0) / 60
+    const todayRecord = getTodayRecordFromList(records)
 
-    if (!newBadges.find(b => b.id === 'first_day')?.unlocked && records.length >= 1) {
-      const badge = newBadges.find(b => b.id === 'first_day')
-      if (badge) {
-        badge.unlocked = true
-        badge.unlockedAt = getTodayStr()
-        changed = true
+    const consecutiveSleep7 = (() => {
+      let count = 0
+      const sorted = [...records]
+        .filter(r => r.date <= getTodayStr())
+        .sort((a, b) => b.date.localeCompare(a.date))
+      for (const r of sorted) {
+        if (r.sleepHours >= 7) count++
+        else break
       }
-    }
+      return count
+    })()
 
-    if (!newBadges.find(b => b.id === 'eye_exercise_pro')?.unlocked && totalEyeExercises >= 20) {
-      const badge = newBadges.find(b => b.id === 'eye_exercise_pro')
-      if (badge) {
-        badge.unlocked = true
-        badge.unlockedAt = getTodayStr()
-        changed = true
+    const morningEyeExercise7 = (() => {
+      let count = 0
+      const sorted = [...records]
+        .filter(r => r.date <= getTodayStr())
+        .sort((a, b) => b.date.localeCompare(a.date))
+      for (const r of sorted) {
+        if (r.eyeExerciseCount >= 1) count++
+        else break
       }
-    }
+      return count
+    })()
 
-    if (!newBadges.find(b => b.id === 'outdoor_lover')?.unlocked && totalOutdoor >= 100) {
-      const badge = newBadges.find(b => b.id === 'outdoor_lover')
-      if (badge) {
+    const badgeChecks: { id: string; condition: boolean }[] = [
+      { id: 'first_day', condition: records.length >= 1 },
+      { id: 'three_days', condition: streakDays >= 3 },
+      { id: 'seven_days', condition: streakDays >= 7 },
+      { id: 'thirty_days', condition: streakDays >= 30 },
+      { id: 'eye_exercise_pro', condition: totalEyeExercises >= 20 },
+      { id: 'outdoor_lover', condition: totalOutdoor >= 100 },
+      { id: 'good_sleeper', condition: consecutiveSleep7 >= 7 },
+      { id: 'water_lover', condition: (todayRecord?.waterIntake || 0) >= 8 && records.filter(r => (r.waterIntake || 0) >= 8).length >= 7 },
+      { id: 'early_bird', condition: morningEyeExercise7 >= 7 },
+      { id: 'night_owl', condition: bestStreak >= 7 && get().settings.nightMode }
+    ]
+
+    for (const check of badgeChecks) {
+      const badge = newBadges.find(b => b.id === check.id)
+      if (badge && !badge.unlocked && check.condition) {
         badge.unlocked = true
         badge.unlockedAt = getTodayStr()
         changed = true
@@ -315,5 +349,88 @@ export const useEyeStore = create<EyeHealthState>((set, get) => ({
       }
     }
     return weekRecords
+  },
+
+  saveEnvironmentRecord: (record) => {
+    const { environmentRecords } = get()
+    const today = getTodayStr()
+    const existing = environmentRecords.findIndex(r => r.date === today)
+    const newRecord: EnvironmentRecord = { ...record, date: today }
+
+    let updated: EnvironmentRecord[]
+    if (existing >= 0) {
+      updated = [...environmentRecords]
+      updated[existing] = newRecord
+    } else {
+      updated = [newRecord, ...environmentRecords]
+    }
+
+    if (updated.length > 30) updated = updated.slice(0, 30)
+
+    storage.set('environmentRecords', updated)
+    set({ environmentRecords: updated })
+  },
+
+  getTodayEnvironment: () => {
+    const today = getTodayStr()
+    return get().environmentRecords.find(r => r.date === today)
+  },
+
+  getRecentEnvironments: (count) => {
+    return get().environmentRecords.slice(0, count)
+  },
+
+  calculateStreak: () => {
+    const { records } = get()
+    const sortedRecords = [...records]
+      .filter(r => r.date <= getTodayStr())
+      .sort((a, b) => b.date.localeCompare(a.date))
+
+    let streak = 0
+    for (const record of sortedRecords) {
+      const isGoalMet = record.screenTime < 480
+        && record.eyeExerciseCount >= 1
+        && record.sleepHours >= 6
+      if (isGoalMet) {
+        streak++
+      } else {
+        break
+      }
+    }
+
+    const { bestStreak } = get()
+    const newBest = Math.max(bestStreak, streak)
+
+    storage.set('streakDays', streak)
+    storage.set('bestStreak', newBest)
+    set({ streakDays: streak, bestStreak: newBest })
+  },
+
+  generateWeeklyReport: () => {
+    const weekRecords = get().getWeekRecords()
+    const weekStart = weekRecords[0]?.date || ''
+    const weekEnd = weekRecords[weekRecords.length - 1]?.date || ''
+
+    const totalScreenTime = weekRecords.reduce((sum, r) => sum + r.screenTime, 0)
+    const avgScreenTime = Math.round(totalScreenTime / 7)
+    const eyeExerciseCount = weekRecords.reduce((sum, r) => sum + r.eyeExerciseCount, 0)
+    const avgSleepHours = Math.round(weekRecords.reduce((sum, r) => sum + r.sleepHours, 0) / 7 * 10) / 10
+    const avgOutdoorMinutes = Math.round(weekRecords.reduce((sum, r) => sum + r.outdoorMinutes, 0) / 7)
+
+    const trends = weekRecords.map(r => ({
+      day: r.date,
+      screenTime: r.screenTime
+    }))
+
+    return {
+      weekStart,
+      weekEnd,
+      totalScreenTime,
+      avgScreenTime,
+      eyeExerciseCount,
+      avgSleepHours,
+      avgOutdoorMinutes,
+      trends
+    }
   }
 }))

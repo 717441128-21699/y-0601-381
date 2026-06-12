@@ -4,6 +4,7 @@ import Taro from '@tarojs/taro'
 import classNames from 'classnames'
 import { useEyeStore } from '@/store/useEyeStore'
 import { formatTime } from '@/utils/date'
+import { isNightTime } from '@/utils/date'
 import { EYE_EXERCISE_TIPS } from '@/data/eyeExercises'
 import styles from './index.module.scss'
 
@@ -21,11 +22,70 @@ const TimerPage: React.FC = () => {
   const [timeLeft, setTimeLeft] = useState(settings.focusDuration * 60)
   const [totalTime, setTotalTime] = useState(settings.focusDuration * 60)
   const [blinkTip, setBlinkTip] = useState('')
+  const [farViewTip, setFarViewTip] = useState('')
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const blinkTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const farViewTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const blinkHideRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const farViewHideRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const currentTip = EYE_EXERCISE_TIPS[Math.floor(Math.random() * EYE_EXERCISE_TIPS.length)]
+
+  const clearAllReminders = useCallback(() => {
+    if (blinkTimerRef.current) {
+      clearInterval(blinkTimerRef.current)
+      blinkTimerRef.current = null
+    }
+    if (farViewTimerRef.current) {
+      clearInterval(farViewTimerRef.current)
+      farViewTimerRef.current = null
+    }
+    if (blinkHideRef.current) {
+      clearTimeout(blinkHideRef.current)
+      blinkHideRef.current = null
+    }
+    if (farViewHideRef.current) {
+      clearTimeout(farViewHideRef.current)
+      farViewHideRef.current = null
+    }
+    setBlinkTip('')
+    setFarViewTip('')
+  }, [])
+
+  const isInNightMode = useCallback(() => {
+    return settings.nightMode && isNightTime(settings.nightStart, settings.nightEnd)
+  }, [settings.nightMode, settings.nightStart, settings.nightEnd])
+
+  const startBlinkReminder = useCallback(() => {
+    if (blinkTimerRef.current) {
+      clearInterval(blinkTimerRef.current)
+    }
+    if (!settings.blinkReminder) return
+    if (isInNightMode()) return
+
+    blinkTimerRef.current = setInterval(() => {
+      if (isInNightMode()) return
+      setBlinkTip('💧 眨眨眼，保持眼睛湿润')
+      if (blinkHideRef.current) clearTimeout(blinkHideRef.current)
+      blinkHideRef.current = setTimeout(() => setBlinkTip(''), 3000)
+    }, settings.blinkInterval * 60 * 1000)
+  }, [settings.blinkReminder, settings.blinkInterval, isInNightMode])
+
+  const startFarViewReminder = useCallback(() => {
+    if (farViewTimerRef.current) {
+      clearInterval(farViewTimerRef.current)
+    }
+    if (!settings.farViewReminder) return
+    if (isInNightMode()) return
+
+    farViewTimerRef.current = setInterval(() => {
+      if (isInNightMode()) return
+      setFarViewTip('🏞️ 远眺20秒，放松眼肌')
+      if (farViewHideRef.current) clearTimeout(farViewHideRef.current)
+      farViewHideRef.current = setTimeout(() => setFarViewTip(''), 3000)
+    }, settings.farViewInterval * 60 * 1000)
+  }, [settings.farViewReminder, settings.farViewInterval, isInNightMode])
 
   const startTimer = useCallback(() => {
     if (timerRef.current) {
@@ -45,50 +105,26 @@ const TimerPage: React.FC = () => {
       })
     }, 1000)
 
-    if (mode === 'focus' && settings.blinkReminder) {
-      startBlinkReminder()
+    if (mode === 'focus') {
+      if (settings.blinkReminder && !isInNightMode()) {
+        startBlinkReminder()
+      }
+      if (settings.farViewReminder && !isInNightMode()) {
+        startFarViewReminder()
+      }
     }
-  }, [mode, settings.blinkReminder])
+  }, [mode, settings.blinkReminder, settings.farViewReminder, isInNightMode, startBlinkReminder, startFarViewReminder])
 
-  const startBlinkReminder = () => {
-    if (blinkTimerRef.current) {
-      clearInterval(blinkTimerRef.current)
-    }
-
-    blinkTimerRef.current = setInterval(() => {
-      setBlinkTip('💧 眨眨眼，保持眼睛湿润')
-      setTimeout(() => setBlinkTip(''), 3000)
-    }, settings.blinkInterval * 60 * 1000)
-  }
-
-  const pauseTimer = () => {
-    if (timerRef.current) {
-      clearInterval(timerRef.current)
-      timerRef.current = null
-    }
-    if (blinkTimerRef.current) {
-      clearInterval(blinkTimerRef.current)
-      blinkTimerRef.current = null
-    }
-    setStatus('paused')
-  }
-
-  const resetTimer = () => {
-    if (timerRef.current) {
-      clearInterval(timerRef.current)
-      timerRef.current = null
-    }
-    if (blinkTimerRef.current) {
-      clearInterval(blinkTimerRef.current)
-      blinkTimerRef.current = null
-    }
+  const handleTimerComplete = useCallback(() => {
+    clearAllReminders()
     setStatus('idle')
-    setTimeLeft(mode === 'focus' ? settings.focusDuration * 60 : settings.restDuration * 60)
-    setTotalTime(mode === 'focus' ? settings.focusDuration * 60 : settings.restDuration * 60)
-  }
 
-  const handleTimerComplete = () => {
-    setStatus('idle')
+    if (isInNightMode()) {
+      if (mode === 'focus') {
+        addScreenTime(totalTime / 60)
+      }
+      return
+    }
 
     if (mode === 'focus') {
       addScreenTime(totalTime / 60)
@@ -99,7 +135,7 @@ const TimerPage: React.FC = () => {
         cancelText: '稍后',
         success: (res) => {
           if (res.confirm) {
-            switchMode('rest')
+            doSwitchMode('rest')
           }
         }
       })
@@ -111,12 +147,32 @@ const TimerPage: React.FC = () => {
         cancelText: '稍后',
         success: (res) => {
           if (res.confirm) {
-            switchMode('focus')
+            doSwitchMode('focus')
           }
         }
       })
     }
-  }
+  }, [mode, totalTime, isInNightMode, addScreenTime, clearAllReminders])
+
+  const pauseTimer = useCallback(() => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current)
+      timerRef.current = null
+    }
+    clearAllReminders()
+    setStatus('paused')
+  }, [clearAllReminders])
+
+  const resetTimer = useCallback(() => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current)
+      timerRef.current = null
+    }
+    clearAllReminders()
+    setStatus('idle')
+    setTimeLeft(mode === 'focus' ? settings.focusDuration * 60 : settings.restDuration * 60)
+    setTotalTime(mode === 'focus' ? settings.focusDuration * 60 : settings.restDuration * 60)
+  }, [mode, settings.focusDuration, settings.restDuration, clearAllReminders])
 
   const switchMode = (newMode: TimerMode) => {
     if (status === 'running') {
@@ -134,16 +190,16 @@ const TimerPage: React.FC = () => {
     }
   }
 
-  const doSwitchMode = (newMode: TimerMode) => {
+  const doSwitchMode = useCallback((newMode: TimerMode) => {
     if (timerRef.current) clearInterval(timerRef.current)
-    if (blinkTimerRef.current) clearInterval(blinkTimerRef.current)
+    clearAllReminders()
 
     setMode(newMode)
     setStatus('idle')
     const duration = newMode === 'focus' ? settings.focusDuration : settings.restDuration
     setTimeLeft(duration * 60)
     setTotalTime(duration * 60)
-  }
+  }, [settings.focusDuration, settings.restDuration, clearAllReminders])
 
   const selectDuration = (minutes: number) => {
     if (status === 'running') return
@@ -151,16 +207,19 @@ const TimerPage: React.FC = () => {
     setTotalTime(minutes * 60)
   }
 
-  const skip = () => {
+  const skip = useCallback(() => {
     if (timerRef.current) clearInterval(timerRef.current)
-    if (blinkTimerRef.current) clearInterval(blinkTimerRef.current)
+    clearAllReminders()
     handleTimerComplete()
-  }
+  }, [clearAllReminders, handleTimerComplete])
 
   useEffect(() => {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current)
       if (blinkTimerRef.current) clearInterval(blinkTimerRef.current)
+      if (farViewTimerRef.current) clearInterval(farViewTimerRef.current)
+      if (blinkHideRef.current) clearTimeout(blinkHideRef.current)
+      if (farViewHideRef.current) clearTimeout(farViewHideRef.current)
     }
   }, [])
 
@@ -170,6 +229,8 @@ const TimerPage: React.FC = () => {
 
   const options = mode === 'focus' ? FOCUS_OPTIONS : REST_OPTIONS
   const currentDuration = Math.floor(totalTime / 60)
+
+  const activeTip = farViewTip || blinkTip
 
   return (
     <View className={styles.page}>
@@ -226,7 +287,7 @@ const TimerPage: React.FC = () => {
             <Text className={styles.timerLabel}>
               {mode === 'focus' ? '专注中' : '休息中'}
             </Text>
-            {blinkTip && <Text className={styles.timerTip}>{blinkTip}</Text>}
+            {activeTip && <Text className={styles.timerTip}>{activeTip}</Text>}
           </View>
         </View>
       </View>
@@ -278,7 +339,7 @@ const TimerPage: React.FC = () => {
                 <Text>眨眼提醒</Text>
               </View>
               <Text className={styles.settingLabel}>
-                {settings.blinkReminder ? '每20分钟' : '关闭'}
+                {settings.blinkReminder ? `每${settings.blinkInterval}分钟` : '关闭'}
               </Text>
             </View>
             <View className={styles.settingRow}>
@@ -287,7 +348,7 @@ const TimerPage: React.FC = () => {
                 <Text>远眺提醒</Text>
               </View>
               <Text className={styles.settingLabel}>
-                {settings.farViewReminder ? '每40分钟' : '关闭'}
+                {settings.farViewReminder ? `每${settings.farViewInterval}分钟` : '关闭'}
               </Text>
             </View>
           </>

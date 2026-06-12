@@ -6,7 +6,8 @@ export default defineAppConfig({
     'pages/achievement/index',
     'pages/settings/index',
     'pages/eye-exercise/index',
-    'pages/environment/index'
+    'pages/environment/index',
+    'pages/weekly-report/index'
   ],
   window: {
     backgroundTextStyle: 'light',

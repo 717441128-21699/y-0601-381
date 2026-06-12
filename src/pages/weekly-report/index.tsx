@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo } from 'react'
 import { View, Text, ScrollView, Button } from '@tarojs/components'
-import Taro from '@tarojs/taro'
+import Taro, { useShareAppMessage } from '@tarojs/taro'
 import { useEyeStore } from '@/store/useEyeStore'
 import { formatDuration } from '@/utils/date'
 import dayjs from 'dayjs'
@@ -11,6 +11,10 @@ const WeeklyReportPage: React.FC = () => {
 
   useEffect(() => {
     init()
+    Taro.showShareMenu({
+      withShareTicket: true,
+      menus: ['shareAppMessage', 'shareTimeline']
+    })
   }, [])
 
   const report = useMemo(() => {
@@ -44,7 +48,17 @@ const WeeklyReportPage: React.FC = () => {
     return list
   }, [report])
 
-  const handleShare = () => {
+  const shareTitle = `护眼周报 ${weekStartDisplay}-${weekEndDisplay}`
+
+  useShareAppMessage(() => {
+    return {
+      title: shareTitle,
+      path: '/pages/weekly-report/index',
+      imageUrl: ''
+    }
+  })
+
+  const handleCopyText = () => {
     const shareText = `【护眼健康周报】\n` +
       `📅 ${weekStartDisplay} - ${weekEndDisplay}\n` +
       `📱 平均屏幕时长：${formatDuration(report.avgScreenTime)}\n` +
@@ -54,19 +68,10 @@ const WeeklyReportPage: React.FC = () => {
       `🔥 连续护眼：${streakDays}天\n` +
       `——来自护眼健康小程序`
 
-    Taro.showModal({
-      title: '分享周报',
-      content: shareText,
-      confirmText: '复制分享',
-      success: (res) => {
-        if (res.confirm) {
-          Taro.setClipboardData({
-            data: shareText,
-            success: () => {
-              Taro.showToast({ title: '已复制到剪贴板', icon: 'success' })
-            }
-          })
-        }
+    Taro.setClipboardData({
+      data: shareText,
+      success: () => {
+        Taro.showToast({ title: '已复制到剪贴板', icon: 'success' })
       }
     })
   }
@@ -169,8 +174,13 @@ const WeeklyReportPage: React.FC = () => {
         </View>
       </View>
 
-      <View className={styles.shareBtn} onClick={handleShare}>
-        <Text>📤 分享给家人</Text>
+      <View className={styles.shareActions}>
+        <Button className={styles.shareBtn} openType="share">
+          📤 转发给家人
+        </Button>
+        <View className={styles.copyBtn} onClick={handleCopyText}>
+          <Text>� 复制文本</Text>
+        </View>
       </View>
 
       <Text className={styles.footer}>护眼健康 · 用心呵护你的眼睛</Text>

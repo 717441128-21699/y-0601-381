@@ -157,16 +157,48 @@
   }
 }
 
+.shareActions {
+  display: flex;
+  gap: $spacing-md;
+  margin-bottom: $spacing-md;
+}
+
 .shareBtn {
-  @include button-reset;
-  width: 100%;
+  flex: 1;
   height: $button-height-lg;
   background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%);
   color: $color-text-white;
   border-radius: $radius-button;
-  font-size: $font-size-lg;
+  font-size: $font-size-md;
   font-weight: $font-weight-semibold;
   box-shadow: 0 6rpx 24rpx rgba(139, 92, 246, 0.3);
+  border: none;
+  line-height: $button-height-lg;
+  text-align: center;
+  padding: 0;
+
+  &::after {
+    border: none;
+  }
+
+  &:active {
+    transform: scale(0.98);
+    opacity: 0.9;
+  }
+}
+
+.copyBtn {
+  flex: 1;
+  height: $button-height-lg;
+  background: $color-bg-card;
+  color: $color-text-secondary;
+  border-radius: $radius-button;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  box-shadow: $shadow-card;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: all $transition-base;
 
   &:active {

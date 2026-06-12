@@ -143,6 +143,7 @@ export const useEyeStore = create<EyeHealthState>((set, get) => ({
 
     storage.set('records', records)
     set({ records: [...records] })
+    get().calculateStreak()
     get().checkBadges()
   },
 
@@ -190,6 +191,7 @@ export const useEyeStore = create<EyeHealthState>((set, get) => ({
 
     storage.set('records', records)
     set({ records: [...records] })
+    get().calculateStreak()
     get().checkBadges()
   },
 
@@ -214,6 +216,7 @@ export const useEyeStore = create<EyeHealthState>((set, get) => ({
 
     storage.set('records', records)
     set({ records: [...records] })
+    get().calculateStreak()
     get().checkBadges()
   },
 
@@ -387,7 +390,11 @@ export const useEyeStore = create<EyeHealthState>((set, get) => ({
       .sort((a, b) => b.date.localeCompare(a.date))
 
     let streak = 0
+    let expectedDate = getTodayStr()
+
     for (const record of sortedRecords) {
+      if (record.date !== expectedDate) break
+
       const isGoalMet = record.screenTime < 480
         && record.eyeExerciseCount >= 1
         && record.sleepHours >= 6
@@ -396,6 +403,9 @@ export const useEyeStore = create<EyeHealthState>((set, get) => ({
       } else {
         break
       }
+
+      const d = dayjs(expectedDate).subtract(1, 'day')
+      expectedDate = d.format('YYYY-MM-DD')
     }
 
     const { bestStreak } = get()

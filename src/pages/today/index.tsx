@@ -12,6 +12,7 @@ const TodayPage: React.FC = () => {
   const {
     init,
     records,
+    settings,
     todayScreenTime,
     streakDays,
     getTodayRecord,
@@ -24,6 +25,65 @@ const TodayPage: React.FC = () => {
 
   const todayRecord = getTodayRecord()
   const weekRecords = getWeekRecords()
+
+  const goalProgress = useMemo(() => {
+    const screenTime = todayRecord?.screenTime || 0
+    const eyeExercises = todayRecord?.eyeExerciseCount || 0
+    const sleepHours = todayRecord?.sleepHours || 0
+    const outdoorMinutes = todayRecord?.outdoorMinutes || 0
+
+    const screenDone = screenTime < settings.targetScreenTime
+    const eyeDone = eyeExercises >= settings.targetEyeExercises
+    const sleepDone = sleepHours >= settings.targetSleepHours
+    const outdoorDone = outdoorMinutes >= settings.targetOutdoorMinutes
+
+    return [
+      {
+        key: 'screen',
+        icon: '📱',
+        label: '屏幕时长',
+        current: Math.round(screenTime / 60 * 10) / 10,
+        target: Math.round(settings.targetScreenTime / 60 * 10) / 10,
+        unit: '小时',
+        progress: Math.min(screenTime / settings.targetScreenTime, 1),
+        done: screenDone,
+        tip: screenDone ? '已达标 ✓' : `还剩 ${(settings.targetScreenTime - screenTime) / 60 > 1 ? Math.round((settings.targetScreenTime - screenTime) / 60 * 10) / 10 : Math.round(settings.targetScreenTime - screenTime)} ${(settings.targetScreenTime - screenTime) / 60 >= 1 ? '小时' : '分钟'}`
+      },
+      {
+        key: 'eye',
+        icon: '👁️',
+        label: '眼保健操',
+        current: eyeExercises,
+        target: settings.targetEyeExercises,
+        unit: '次',
+        progress: Math.min(eyeExercises / settings.targetEyeExercises, 1),
+        done: eyeDone,
+        tip: eyeDone ? '已达标 ✓' : `还差 ${settings.targetEyeExercises - eyeExercises} 次`
+      },
+      {
+        key: 'sleep',
+        icon: '😴',
+        label: '睡眠时长',
+        current: sleepHours,
+        target: settings.targetSleepHours,
+        unit: '小时',
+        progress: Math.min(sleepHours / settings.targetSleepHours, 1),
+        done: sleepDone,
+        tip: sleepDone ? '已达标 ✓' : `还差 ${settings.targetSleepHours - sleepHours} 小时`
+      },
+      {
+        key: 'outdoor',
+        icon: '🌳',
+        label: '户外活动',
+        current: outdoorMinutes,
+        target: settings.targetOutdoorMinutes,
+        unit: '分钟',
+        progress: Math.min(outdoorMinutes / settings.targetOutdoorMinutes, 1),
+        done: outdoorDone,
+        tip: outdoorDone ? '已达标 ✓' : `还差 ${settings.targetOutdoorMinutes - outdoorMinutes} 分钟`
+      }
+    ]
+  }, [todayRecord, settings])
 
   const healthScore = useMemo(() => {
     let score = 60
@@ -131,6 +191,34 @@ const TodayPage: React.FC = () => {
               label="户外活动"
               color="orange"
             />
+          </View>
+        </View>
+
+        <View className={styles.section}>
+          <SectionHeader title="今日目标" icon="🎯" />
+          <View className={styles.goalCard}>
+            {goalProgress.map(item => (
+              <View key={item.key} className={styles.goalItem}>
+                <View className={styles.goalHead}>
+                  <View className={styles.goalIcon}>{item.icon}</View>
+                  <View className={styles.goalInfo}>
+                    <Text className={styles.goalLabel}>{item.label}</Text>
+                    <Text className={styles.goalValue}>
+                      {item.current}/{item.target} {item.unit}
+                    </Text>
+                  </View>
+                  <Text className={classNames(styles.goalTip, item.done && styles.goalTipDone)}>
+                    {item.tip}
+                  </Text>
+                </View>
+                <View className={styles.goalBarBg}>
+                  <View
+                    className={classNames(styles.goalBar, item.done ? styles.goalBarDone : styles.goalBarProgress)}
+                    style={{ width: `${item.progress * 100}%` }}
+                  />
+                </View>
+              </View>
+            ))}
           </View>
         </View>
 

@@ -1,13 +1,27 @@
 import React, { useEffect, useMemo } from 'react'
 import { View, Text, ScrollView, Button } from '@tarojs/components'
-import Taro, { useShareAppMessage } from '@tarojs/taro'
+import Taro, { useShareAppMessage, useRouter } from '@tarojs/taro'
 import { useEyeStore } from '@/store/useEyeStore'
 import { formatDuration } from '@/utils/date'
 import dayjs from 'dayjs'
 import styles from './index.module.scss'
 
+interface SharedReportData {
+  weekStart: string
+  weekEnd: string
+  totalScreenTime: number
+  avgScreenTime: number
+  eyeExerciseCount: number
+  avgSleepHours: number
+  avgOutdoorMinutes: number
+  streakDays: number
+  bestStreak: number
+  isShared?: boolean
+}
+
 const WeeklyReportPage: React.FC = () => {
-  const { init, generateWeeklyReport, streakDays, bestStreak } = useEyeStore()
+  const router = useRouter()
+  const { init, generateWeeklyReport, streakDays: storeStreak, bestStreak: storeBestStreak } = useEyeStore()
 
   useEffect(() => {
     init()
@@ -17,14 +31,37 @@ const WeeklyReportPage: React.FC = () => {
     })
   }, [])
 
-  const report = useMemo(() => {
-    return generateWeeklyReport()
-  }, [generateWeeklyReport])
+  const sharedData = useMemo<SharedReportData | null>(() => {
+    const dataParam = router.params?.data
+    if (!dataParam) return null
+    try {
+      const decoded = decodeURIComponent(dataParam)
+      const parsed = JSON.parse(decoded)
+      return { ...parsed, isShared: true }
+    } catch (e) {
+      return null
+    }
+  }, [router.params])
+
+  const report = useMemo<SharedReportData>(() => {
+    if (sharedData) return sharedData
+    const localReport = generateWeeklyReport()
+    return {
+      weekStart: localReport.weekStart,
+      weekEnd: localReport.weekEnd,
+      totalScreenTime: localReport.totalScreenTime,
+      avgScreenTime: localReport.avgScreenTime,
+      eyeExerciseCount: localReport.eyeExerciseCount,
+      avgSleepHours: localReport.avgSleepHours,
+      avgOutdoorMinutes: localReport.avgOutdoorMinutes,
+      streakDays: storeStreak,
+      bestStreak: storeBestStreak,
+      isShared: false
+    }
+  }, [sharedData, generateWeeklyReport, storeStreak, storeBestStreak])
 
   const weekStartDisplay = dayjs(report.weekStart).format('MM月DD日')
   const weekEndDisplay = dayjs(report.weekEnd).format('MM月DD日')
-
-  const maxScreenTime = Math.max(...report.trends.map(t => t.screenTime), 1)
 
   const advices = useMemo(() => {
     const list: string[] = []
@@ -48,12 +85,27 @@ const WeeklyReportPage: React.FC = () => {
     return list
   }, [report])
 
+  const shareDataStr = useMemo(() => {
+    const payload = {
+      weekStart: report.weekStart,
+      weekEnd: report.weekEnd,
+      totalScreenTime: report.totalScreenTime,
+      avgScreenTime: report.avgScreenTime,
+      eyeExerciseCount: report.eyeExerciseCount,
+      avgSleepHours: report.avgSleepHours,
+      avgOutdoorMinutes: report.avgOutdoorMinutes,
+      streakDays: report.streakDays,
+      bestStreak: report.bestStreak
+    }
+    return encodeURIComponent(JSON.stringify(payload))
+  }, [report])
+
   const shareTitle = `护眼周报 ${weekStartDisplay}-${weekEndDisplay}`
 
   useShareAppMessage(() => {
     return {
       title: shareTitle,
-      path: '/pages/weekly-report/index',
+      path: `/pages/weekly-report/index?data=${shareDataStr}`,
       imageUrl: ''
     }
   })
@@ -65,7 +117,7 @@ const WeeklyReportPage: React.FC = () => {
       `👁️ 眼保健操：${report.eyeExerciseCount}次\n` +
       `😴 平均睡眠：${report.avgSleepHours}小时\n` +
       `🌳 平均户外：${report.avgOutdoorMinutes}分钟\n` +
-      `🔥 连续护眼：${streakDays}天\n` +
+      `🔥 连续护眼：${report.streakDays}天\n` +
       `——来自护眼健康小程序`
 
     Taro.setClipboardData({
@@ -80,10 +132,17 @@ const WeeklyReportPage: React.FC = () => {
     <ScrollView className={styles.page} scrollY>
       <View className={styles.header}>
         <Text className={styles.headerIcon}>📋</Text>
-        <Text className={styles.headerTitle}>护眼健康周报</Text>
+        <Text className={styles.headerTitle}>
+          {report.isShared ? '家人分享的周报' : '护眼健康周报'}
+        </Text>
         <Text className={styles.headerDate}>
           {weekStartDisplay} - {weekEndDisplay}
         </Text>
+        {report.isShared && (
+          <View className={styles.sharedBadge}>
+            <Text>👨‍👩‍👧 来自家人分享</Text>
+          </View>
+        )}
       </View>
 
       <View className={styles.summaryGrid}>
@@ -121,31 +180,6 @@ const WeeklyReportPage: React.FC = () => {
         </View>
       </View>
 
-      <View className={styles.trendCard}>
-        <Text className={styles.trendTitle}>本周屏幕时长趋势</Text>
-        <View className={styles.trendBars}>
-          {report.trends.map((item, index) => {
-            const height = (item.screenTime / maxScreenTime) * 160
-            const dayLabels = ['日', '一', '二', '三', '四', '五', '六']
-            const dayOfWeek = dayjs(item.day).day()
-            return (
-              <View key={item.day} className={styles.trendBarItem}>
-                {item.screenTime > 0 && (
-                  <Text className={styles.trendValue}>
-                    {Math.round(item.screenTime / 60 * 10) / 10}h
-                  </Text>
-                )}
-                <View
-                  className={styles.trendBar}
-                  style={{ height: `${Math.max(height, 8)}rpx` }}
-                />
-                <Text className={styles.trendLabel}>{dayLabels[dayOfWeek]}</Text>
-              </View>
-            )
-          })}
-        </View>
-      </View>
-
       <View className={styles.adviceCard}>
         <Text className={styles.adviceTitle}>
           💡 护眼建议
@@ -163,7 +197,7 @@ const WeeklyReportPage: React.FC = () => {
         </Text>
         <View className={styles.adviceList}>
           <Text className={styles.adviceItem}>
-            连续护眼 {streakDays} 天，历史最佳 {bestStreak} 天
+          连续护眼 {report.streakDays} 天，历史最佳 {report.bestStreak} 天
           </Text>
           <Text className={styles.adviceItem}>
             本周累计屏幕时长 {formatDuration(report.totalScreenTime)}
@@ -174,14 +208,24 @@ const WeeklyReportPage: React.FC = () => {
         </View>
       </View>
 
-      <View className={styles.shareActions}>
-        <Button className={styles.shareBtn} openType="share">
-          📤 转发给家人
-        </Button>
-        <View className={styles.copyBtn} onClick={handleCopyText}>
-          <Text>� 复制文本</Text>
+      {!report.isShared && (
+        <View className={styles.shareActions}>
+          <Button className={styles.shareBtn} openType="share">
+            📤 转发给家人
+          </Button>
+          <View className={styles.copyBtn} onClick={handleCopyText}>
+            <Text>📋 复制文本</Text>
+          </View>
         </View>
-      </View>
+      )}
+
+      {report.isShared && (
+        <View className={styles.shareActions}>
+          <View className={styles.copyBtn} onClick={handleCopyText}>
+            <Text>📋 复制文本</Text>
+          </View>
+        </View>
+      )}
 
       <Text className={styles.footer}>护眼健康 · 用心呵护你的眼睛</Text>
     </ScrollView>

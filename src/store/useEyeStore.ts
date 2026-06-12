@@ -47,7 +47,11 @@ const DEFAULT_SETTINGS: Settings = {
   nightStart: '22:00',
   nightEnd: '07:00',
   soundEnabled: true,
-  vibrationEnabled: true
+  vibrationEnabled: true,
+  targetScreenTime: 480,
+  targetEyeExercises: 1,
+  targetSleepHours: 6,
+  targetOutdoorMinutes: 30
 }
 
 const getTodayRecordFromList = (records: DailyRecord[]): DailyRecord | undefined => {
@@ -93,6 +97,8 @@ export const useEyeStore = create<EyeHealthState>((set, get) => ({
     const newSettings = { ...get().settings, ...settings }
     storage.set('settings', newSettings)
     set({ settings: newSettings })
+    get().calculateStreak()
+    get().checkBadges()
   },
 
   addScreenTime: (minutes) => {
@@ -384,7 +390,7 @@ export const useEyeStore = create<EyeHealthState>((set, get) => ({
   },
 
   calculateStreak: () => {
-    const { records } = get()
+    const { records, settings } = get()
     const sortedRecords = [...records]
       .filter(r => r.date <= getTodayStr())
       .sort((a, b) => b.date.localeCompare(a.date))
@@ -395,9 +401,10 @@ export const useEyeStore = create<EyeHealthState>((set, get) => ({
     for (const record of sortedRecords) {
       if (record.date !== expectedDate) break
 
-      const isGoalMet = record.screenTime < 480
-        && record.eyeExerciseCount >= 1
-        && record.sleepHours >= 6
+      const isGoalMet = record.screenTime < settings.targetScreenTime
+        && record.eyeExerciseCount >= settings.targetEyeExercises
+        && record.sleepHours >= settings.targetSleepHours
+        && record.outdoorMinutes >= settings.targetOutdoorMinutes
       if (isGoalMet) {
         streak++
       } else {

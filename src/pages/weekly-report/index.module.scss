@@ -32,6 +32,16 @@
   opacity: 0.85;
 }
 
+.sharedBadge {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.25);
+  padding: $spacing-xs $spacing-md;
+  border-radius: $radius-round;
+  margin-top: $spacing-sm;
+  font-size: $font-size-xs;
+}
+
 .summaryGrid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);

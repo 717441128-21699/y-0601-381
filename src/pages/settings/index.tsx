@@ -94,6 +94,66 @@ const SettingsPage: React.FC = () => {
     updateSettings({ vibrationEnabled: value })
   }
 
+  const handleTargetScreenTime = () => {
+    const options = [
+      { label: '3小时', value: 180 },
+      { label: '4小时', value: 240 },
+      { label: '6小时', value: 360 },
+      { label: '8小时', value: 480 }
+    ]
+    Taro.showActionSheet({
+      itemList: options.map(o => o.label),
+      success: (res) => {
+        updateSettings({ targetScreenTime: options[res.tapIndex].value })
+      }
+    })
+  }
+
+  const handleTargetEyeExercises = () => {
+    const options = [
+      { label: '1次', value: 1 },
+      { label: '2次', value: 2 },
+      { label: '3次', value: 3 },
+      { label: '5次', value: 5 }
+    ]
+    Taro.showActionSheet({
+      itemList: options.map(o => o.label),
+      success: (res) => {
+        updateSettings({ targetEyeExercises: options[res.tapIndex].value })
+      }
+    })
+  }
+
+  const handleTargetSleepHours = () => {
+    const options = [
+      { label: '6小时', value: 6 },
+      { label: '7小时', value: 7 },
+      { label: '8小时', value: 8 },
+      { label: '9小时', value: 9 }
+    ]
+    Taro.showActionSheet({
+      itemList: options.map(o => o.label),
+      success: (res) => {
+        updateSettings({ targetSleepHours: options[res.tapIndex].value })
+      }
+    })
+  }
+
+  const handleTargetOutdoor = () => {
+    const options = [
+      { label: '30分钟', value: 30 },
+      { label: '60分钟', value: 60 },
+      { label: '90分钟', value: 90 },
+      { label: '120分钟', value: 120 }
+    ]
+    Taro.showActionSheet({
+      itemList: options.map(o => o.label),
+      success: (res) => {
+        updateSettings({ targetOutdoorMinutes: options[res.tapIndex].value })
+      }
+    })
+  }
+
   const handleFamilyReport = () => {
     Taro.navigateTo({ url: '/pages/weekly-report/index' })
   }
@@ -224,6 +284,54 @@ const SettingsPage: React.FC = () => {
             </View>
           </>
         )}
+      </View>
+
+      <View className={styles.settingsGroup}>
+        <Text className={styles.groupTitle}>每日目标</Text>
+        <View className={styles.settingItem} onClick={handleTargetScreenTime}>
+          <View className={classNames(styles.settingIcon, styles.blueIcon)}>📱</View>
+          <View className={styles.settingContent}>
+            <Text className={styles.settingTitle}>屏幕时长目标</Text>
+            <Text className={styles.settingDesc}>每日屏幕使用时长上限</Text>
+          </View>
+          <Text className={styles.settingValue}>
+            {Math.floor(settings.targetScreenTime / 60)}小时
+          </Text>
+          <Text className={styles.settingArrow}>›</Text>
+        </View>
+        <View className={styles.settingItem} onClick={handleTargetEyeExercises}>
+          <View className={classNames(styles.settingIcon, styles.greenIcon)}>👁️</View>
+          <View className={styles.settingContent}>
+            <Text className={styles.settingTitle}>眼操目标</Text>
+            <Text className={styles.settingDesc}>每天至少做几次眼保健操</Text>
+          </View>
+          <Text className={styles.settingValue}>
+            {settings.targetEyeExercises}次
+          </Text>
+          <Text className={styles.settingArrow}>›</Text>
+        </View>
+        <View className={styles.settingItem} onClick={handleTargetSleepHours}>
+          <View className={classNames(styles.settingIcon, styles.purpleIcon)}>😴</View>
+          <View className={styles.settingContent}>
+            <Text className={styles.settingTitle}>睡眠目标</Text>
+            <Text className={styles.settingDesc}>每天至少睡眠几小时</Text>
+          </View>
+          <Text className={styles.settingValue}>
+            {settings.targetSleepHours}小时
+          </Text>
+          <Text className={styles.settingArrow}>›</Text>
+        </View>
+        <View className={styles.settingItem} onClick={handleTargetOutdoor}>
+          <View className={classNames(styles.settingIcon, styles.orangeIcon)}>🌳</View>
+          <View className={styles.settingContent}>
+            <Text className={styles.settingTitle}>户外目标</Text>
+            <Text className={styles.settingDesc}>每天至少户外活动多久</Text>
+          </View>
+          <Text className={styles.settingValue}>
+            {settings.targetOutdoorMinutes}分钟
+          </Text>
+          <Text className={styles.settingArrow}>›</Text>
+        </View>
       </View>
 
       <View className={styles.settingsGroup}>

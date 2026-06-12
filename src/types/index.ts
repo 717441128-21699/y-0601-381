@@ -49,6 +49,10 @@ export interface Settings {
   nightEnd: string
   soundEnabled: boolean
   vibrationEnabled: boolean
+  targetScreenTime: number
+  targetEyeExercises: number
+  targetSleepHours: number
+  targetOutdoorMinutes: number
 }
 
 export interface EnvironmentRecord {

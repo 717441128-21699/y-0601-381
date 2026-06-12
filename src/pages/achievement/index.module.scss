@@ -310,3 +310,245 @@
   color: $color-text-tertiary;
   font-size: $font-size-sm;
 }
+
+.monthNav {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.monthArrow {
+  width: 48rpx;
+  height: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: $font-size-lg;
+  color: $color-text-secondary;
+  border-radius: $radius-round;
+  background: $color-bg-card;
+  transition: all $transition-base;
+
+  &:active {
+    background: $color-bg-secondary;
+  }
+}
+
+.monthText {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  min-width: 160rpx;
+  text-align: center;
+}
+
+.calendar {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+}
+
+.calendarWeekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-bottom: $spacing-sm;
+}
+
+.calendarWeekday {
+  text-align: center;
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  padding: $spacing-sm 0;
+}
+
+.calendarGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4rpx;
+  margin-bottom: $spacing-md;
+}
+
+.calendarDay {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: $radius-md;
+  position: relative;
+  transition: all $transition-base;
+
+  &:active {
+    transform: scale(0.92);
+  }
+}
+
+.calendarDayNum {
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+}
+
+.otherMonth {
+  opacity: 0.3;
+}
+
+.today {
+  .calendarDayNum {
+    color: $color-primary;
+    font-weight: $font-weight-bold;
+  }
+}
+
+.goalMet {
+  background: #dcfce7;
+}
+
+.goalNotMet {
+  background: #fef3c7;
+}
+
+.dot {
+  position: absolute;
+  bottom: 8rpx;
+  width: 8rpx;
+  height: 8rpx;
+  border-radius: 50%;
+}
+
+.dotSuccess {
+  background: $color-primary;
+}
+
+.dotWarning {
+  background: $color-warning;
+}
+
+.calendarLegend {
+  display: flex;
+  gap: $spacing-lg;
+  justify-content: center;
+  padding-top: $spacing-md;
+  border-top: 1rpx solid $color-divider;
+}
+
+.modalMask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: $page-padding;
+}
+
+.modalContent {
+  background: $color-bg-card;
+  border-radius: $radius-xl;
+  width: 100%;
+  max-width: 600rpx;
+  overflow: hidden;
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-lg;
+  border-bottom: 1rpx solid $color-divider;
+}
+
+.modalTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.modalClose {
+  font-size: 48rpx;
+  color: $color-text-tertiary;
+  line-height: 1;
+}
+
+.modalBody {
+  padding: $spacing-lg;
+}
+
+.detailItem {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  padding: $spacing-md 0;
+  border-bottom: 1rpx solid $color-divider;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.detailIcon {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: $radius-round;
+  background: $color-primary-bg;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+  flex-shrink: 0;
+}
+
+.detailInfo {
+  flex: 1;
+}
+
+.detailLabel {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  margin-bottom: 2rpx;
+}
+
+.detailValue {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.detailStatus {
+  font-size: $font-size-xs;
+  flex-shrink: 0;
+}
+
+.statusSuccess {
+  color: $color-primary;
+  font-weight: $font-weight-medium;
+}
+
+.statusFail {
+  color: $color-error;
+}
+
+.modalFooter {
+  padding: $spacing-md $spacing-lg $spacing-lg;
+}
+
+.modalBtn {
+  height: $button-height-lg;
+  background: $color-primary;
+  color: $color-text-white;
+  border-radius: $radius-button;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.9;
+  }
+}

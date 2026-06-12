@@ -226,3 +226,86 @@
 .section {
   margin-bottom: $spacing-lg;
 }
+
+.goalCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-lg;
+}
+
+.goalItem {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.goalHead {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+}
+
+.goalIcon {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: $radius-round;
+  background: $color-primary-bg;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32rpx;
+  flex-shrink: 0;
+}
+
+.goalInfo {
+  flex: 1;
+}
+
+.goalLabel {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  margin-bottom: 2rpx;
+}
+
+.goalValue {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.goalTip {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  flex-shrink: 0;
+}
+
+.goalTipDone {
+  color: $color-primary;
+  font-weight: $font-weight-medium;
+}
+
+.goalBarBg {
+  width: 100%;
+  height: 12rpx;
+  background: $color-bg-gradient-end;
+  border-radius: $radius-round;
+  overflow: hidden;
+}
+
+.goalBar {
+  height: 100%;
+  border-radius: $radius-round;
+  transition: width $transition-slow ease;
+}
+
+.goalBarProgress {
+  background: linear-gradient(90deg, $color-primary 0%, $color-primary-light 100%);
+}
+
+.goalBarDone {
+  background: linear-gradient(90deg, #10b981 0%, #34d399 100%);
+}
